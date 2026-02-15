@@ -3,6 +3,26 @@ uuid = "8d32b490-31f8-4630-870a-b9fdc182340f"
 authors = ["XingyuZhang2018 <864129714@qq.com> and contributors"]
 version = "1.0.0-DEV"
 
+[deps]
+AMDGPU = "21141c5a-9bdb-4563-92ae-f87d6854732e"
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+ForwardDiffChainRules = "c9556dd2-1aed-4cfe-8560-1557cf593001"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+KrylovKit = "0b1a1467-8014-51b9-945f-bf0ae24f4b77"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
+MPIPreferences = "3da0fdf6-3ccc-4f1b-acd9-58baa6c99267"
+OptimKit = "77e91f04-9b3b-57a6-a776-40b61faaebe0"
+Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+TensorOperations = "6aa20fa7-93e2-5fca-9bc0-fbd0db3c71a2"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+cuTENSOR = "011b41b2-24ef-40a8-b3eb-fa098493e9e1"
+
 [compat]
 julia = "1.11"
 
