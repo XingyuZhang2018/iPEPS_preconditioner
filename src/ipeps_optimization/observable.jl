@@ -74,7 +74,6 @@ function cor_len_value(env::CTMEnv, params)
     end
         
     ξ = -1/log(abs(λ2/λcs[1]))
-    @show ξ
     params.verbosity >= 4 && println("ξ = $(ξ)")
 
     return ξ
