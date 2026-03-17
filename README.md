@@ -50,7 +50,7 @@ Citation
 
 If you use this code in your research, please cite the paper:
 
-Zhang, X.-Y., Yang, Q., Corboz, P., Haegeman, J., & Tang, W. (2025). Accelerating two-dimensional tensor network optimization by preconditioning. arXiv:2511.09546v1. https://arxiv.org/abs/2511.09546v1
+Zhang, X.-Y., Yang, Q., Corboz, P., Haegeman, J., & Tang, W. [Phys. Rev. B 113, 125111 (2026)](https://journals.aps.org/prb/abstract/10.1103/h396-yc28). Accelerating two-dimensional tensor network optimization by preconditioning. 
 
 License
 -------
