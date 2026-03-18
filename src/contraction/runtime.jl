@@ -102,8 +102,13 @@ function environment(M, env::VUMPSEnv, alg::VUMPS)
 
     maxiter_power_origin = alg.maxiter_power
     krylov_dim_origin = alg.krylov_dim
+    eigsolver_origin = alg.eigsolver
     alg.maxiter_power = alg.maxiter_power_ad
     alg.krylov_dim = alg.krylov_dim_ad
+    # Arnoldi is not Zygote-compatible; use power method for AD phase
+    if alg.eigsolver == :arnoldi
+        alg.eigsolver = :power
+    end
     for i = 1:alg.maxiter_ad
         env, err = alg.ifcheckpoint ? checkpoint(leftmove, M, env, alg) : leftmove(M, env, alg) 
         alg.verbosity >= 3 && i % alg.output_interval == 0 && @ignore_derivatives @info @sprintf("i = %5d,\tt = %.2fs\terr = %.3e\n", i, time()-t0, err)
@@ -117,6 +122,7 @@ function environment(M, env::VUMPSEnv, alg::VUMPS)
     end
     alg.maxiter_power = maxiter_power_origin
     alg.krylov_dim = krylov_dim_origin
+    alg.eigsolver = eigsolver_origin
 
     return env, err
 end

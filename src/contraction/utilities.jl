@@ -37,14 +37,11 @@ end
 
 function eigsolve_dispatch(f, v, alg; ifvalue=false)
     if alg.eigsolver == :arnoldi
-        # Arnoldi iteration is not Zygote-compatible (array mutations).
-        # Compute eigenvector in @ignore, then apply f once on the AD tape
-        # so gradients flow through f, similar to simple_eig with maxiter=1.
-        v = Zygote.@ignore arnoldi_eig(f, v; krylov_dim=alg.krylov_dim)[2]
-        v = f(v)
-        v /= Zygote.@ignore norm(v)
+        # Arnoldi has array mutations incompatible with Zygote AD.
+        # It should only be used in the forward pass (inside @ignore_derivatives).
+        # During AD phase, runtime.jl swaps eigsolver back to :power.
+        λ, v = arnoldi_eig(f, v; krylov_dim=alg.krylov_dim, ifvalue)
         v = orth_for_ad(v)
-        λ = ifvalue ? dot(v, f(v)) : zero(real(eltype(v)))
         return λ, v
     elseif alg.eigsolver == :krylovkit
         λs, vs, info = eigsolve(f, v, 1, :LM; maxiter=1)

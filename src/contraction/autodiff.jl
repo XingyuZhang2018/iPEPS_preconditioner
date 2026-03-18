@@ -318,10 +318,14 @@ function ChainRulesCore.rrule(::typeof(environment_fix_point),
         # -----------------------------
         # checkpoint: only ONE pullback
         # -----------------------------
-        _, pb = pullback(fix_gauge_leftmove, M, env_out, alg)
-        # @show norm(env_new.T - env_out.T)
-        # @show norm(env_new.C - env_out.C)
-        # @show norm(env_new.AL - env_out.AL)
+        # Arnoldi has array mutations incompatible with Zygote;
+        # fall back to power method for the differentiated pullback.
+        alg_ad = alg
+        if alg.eigsolver == :arnoldi
+            alg_ad = deepcopy(alg)
+            alg_ad.eigsolver = :power
+        end
+        _, pb = pullback(fix_gauge_leftmove, M, env_out, alg_ad)
 
         # VJP helpers
         # function vjp_env_env(∂env)
