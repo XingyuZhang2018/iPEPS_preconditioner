@@ -36,42 +36,19 @@ end
 
 function Cenv(Tu, Td, Cint; alg, ifvalue=false)
     f(C) = Cmap(C, Tu, Td)
-    if alg.ifsimple_eig
-        λ, v = simple_eig(f, Cint; maxiter=alg.maxiter_power, ifvalue)
-        return λ, v
-    else
-        λs, Cs, info = eigsolve(f, Cint, 1, :LM; maxiter=1)
-        info.converged == 0 && error("eigsolve did not converge")
-        return λs[1], Cs[1]
-    end
+    return eigsolve_dispatch(f, Cint, alg; ifvalue)
 end
 
 function Eenv(Tu, Td, M, Tint; alg, ifvalue=false)
-    @unpack ifsimple_eig, maxiter_power, forloop_iter, ifparallel, ifcheckpoint = alg
-    # f(E) = ifcheckpoint ? checkpoint(FLmap_parallel, E, Tu, Td, M; ifparallel, forloop_iter) : FLmap_parallel(E, Tu, Td, M; ifparallel, forloop_iter) 
-    f(E) = FLmap_parallel(E, Tu, Td, M; ifparallel, forloop_iter) 
-    if alg.ifsimple_eig
-        λ, v = simple_eig(f, Tint; maxiter=maxiter_power, ifvalue)
-        return λ, v
-    else
-        λs, Es, info = eigsolve(f, Tint, 1, :LM; maxiter=1)
-        info.converged == 0 && error("eigsolve did not converge")
-        return λs[1], Es[1]
-    end
+    @unpack forloop_iter, ifparallel = alg
+    f(E) = FLmap_parallel(E, Tu, Td, M; ifparallel, forloop_iter)
+    return eigsolve_dispatch(f, Tint, alg; ifvalue)
 end
 
 function ACenv(Tl, Tr, M, Tint; alg, ifvalue=false)
-    @unpack ifsimple_eig, maxiter_power, forloop_iter, ifparallel, ifcheckpoint = alg
-    # f(AC) = ifcheckpoint ? checkpoint(ACmap_parallel, AC, Tl, Tr, M; ifparallel, forloop_iter) :  ACmap_parallel(AC, Tl, Tr, M; ifparallel, forloop_iter)
+    @unpack forloop_iter, ifparallel = alg
     f(AC) = ACmap_parallel(AC, Tl, Tr, M; ifparallel, forloop_iter)
-    if alg.ifsimple_eig
-        λ, v = simple_eig(f, Tint; maxiter=maxiter_power, ifvalue)
-        return λ, v
-    else
-        λs, Es, info = eigsolve(f, Tint, 1, :LM; maxiter=1)
-        info.converged == 0 && error("eigsolve did not converge")
-        return λs[1], Es[1]
-    end
+    return eigsolve_dispatch(f, Tint, alg; ifvalue)
 end
 
 function getU(env::CTMEnv, ::QRCTM)

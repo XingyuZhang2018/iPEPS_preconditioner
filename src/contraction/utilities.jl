@@ -35,6 +35,20 @@ function simple_eig(f, v; maxiter, ifvalue=false)
     return λ, v
 end
 
+function eigsolve_dispatch(f, v, alg; ifvalue=false)
+    if alg.eigsolver == :arnoldi
+        λ, v = arnoldi_eig(f, v; krylov_dim=alg.krylov_dim, ifvalue)
+        v = orth_for_ad(v)
+        return λ, v
+    elseif alg.eigsolver == :krylovkit
+        λs, vs, info = eigsolve(f, v, 1, :LM; maxiter=1)
+        info.converged == 0 && error("eigsolve did not converge")
+        return λs[1], vs[1]
+    else  # :power (default)
+        return simple_eig(f, v; maxiter=alg.maxiter_power, ifvalue)
+    end
+end
+
 function qr_for_ad(A::AbstractMatrix{T}) where {T}
     Q, R = qr(A)
     Q = _arraytype(A)(Q)
