@@ -29,6 +29,7 @@ export init_ipeps, optimise_ipeps, GradientOptimize, observable
 
 include("defaults.jl")
 include("contraction/utilities.jl")
+include("contraction/arnoldi_eig.jl")
 
 include("contraction/unit_contraction/basic.jl")
 include("contraction/unit_contraction/forloop_parallel_MPI.jl")

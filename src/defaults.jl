@@ -15,7 +15,9 @@ module Defaults
     const tol = 1e-12
     const ifcheckpoint = false
     const ifsimple_eig = true
-    
+    const eigsolver = :power
+    const krylov_dim = 10
+
     const fpgrad_maxiter = 100
     const fpgrad_tol = 1e-6
     const output_interval = 1

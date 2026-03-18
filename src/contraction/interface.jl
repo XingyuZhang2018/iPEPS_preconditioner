@@ -10,11 +10,13 @@ abstract type Algorithm end
     verbosity::Int = Defaults.verbosity
     ifsimple_eig::Bool = Defaults.ifsimple_eig
     maxiter_power::Int = 1 # power steps for eigsolve
+    eigsolver::Symbol = Defaults.eigsolver
+    krylov_dim::Int = Defaults.krylov_dim
     ifload_env::Bool = true
     ifsave_env::Bool = true
     ifparallel::Bool = false
     ifcheckpoint::Bool = false
-    forloop_iter::Int = 1 
+    forloop_iter::Int = 1
 end
 
 @with_kw mutable struct VUMPS <: Algorithm
@@ -28,6 +30,9 @@ end
     ifsimple_eig::Bool = Defaults.ifsimple_eig
     maxiter_power::Int = 1 # power steps for eigsolve
     maxiter_power_ad::Int = 5 # power steps for eigsolve in ad
+    eigsolver::Symbol = Defaults.eigsolver
+    krylov_dim::Int = Defaults.krylov_dim
+    krylov_dim_ad::Int = Defaults.krylov_dim
     ifload_env::Bool = true
     ifsave_env::Bool = true
     ifparallel::Bool = false
