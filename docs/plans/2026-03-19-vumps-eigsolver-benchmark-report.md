@@ -230,6 +230,27 @@ This mechanism is analogous to the role of stochastic gradient noise in deep lea
 
 6. **Fixedpoint rrule is available** as a GPU-compatible option for cases requiring gradient accuracy (e.g., computing physical observables near a known minimum, or Hessian-based analysis).
 
+### 4.7 Bond Dimension Annealing ($\chi$ Scheduling)
+
+We tested whether gradually increasing $\chi$ (annealing from small to large) improves optimization compared to directly optimizing at the target $\chi = 64$:
+
+- **Direct $\chi = 64$:** 200 optimization steps at fixed $\chi = 64$
+- **$\chi$ annealing:** Start at $\chi = 16$, increase by 16 each restart ($16 \to 32 \to 48 \to 64$), 50 steps per stage, `maxiter_restart=4`
+
+| Config | seed=42 | seed=123 | seed=456 |
+|---|---|---|---|
+| direct $\chi=64$ (E) | $-0.6674$ | $-0.6680$ | $-0.6680$ |
+| $\chi$ annealing (E) | $\mathbf{-0.6680}$ | $-0.6680$ | $-0.6671$ |
+| direct $\chi=64$ (time) | 58.2s | 50.9s | 51.5s |
+| $\chi$ annealing (time) | 59.3s | 58.4s | 43.7s |
+
+**Analysis:** $\chi$ annealing showed mixed results:
+- **seed=42:** Annealing found significantly better energy ($-0.6680$ vs $-0.6674$, $\Delta E \approx 6 \times 10^{-4}$), suggesting the smoother landscape at small $\chi$ helped find a better basin
+- **seed=123:** Comparable results
+- **seed=456:** Annealing performed worse ($-0.6671$ vs $-0.6680$), with LBFGS converging after only 7 steps at $\chi = 64$ — the tensor optimized at small $\chi$ was far from the $\chi = 64$ minimum and the optimizer converged to a shallow local minimum
+
+The inconsistency suggests that the current annealing schedule (4 restarts $\times$ 50 steps, $\Delta\chi = 16$) may need refinement: more optimization steps at each $\chi$ level, or smaller $\chi$ increments, to ensure proper equilibration before increasing $\chi$.
+
 ## 8. Future Directions
 
 - **Riemannian optimization:** Formulate VUMPS updates on the Stiefel/Grassmann manifold to enable proper manifold-aware acceleration.

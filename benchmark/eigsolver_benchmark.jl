@@ -81,7 +81,8 @@ function run_benchmark(config::BenchmarkConfig;
                        atype=Array,
                        preconditiontype=:none,
                        iter_precond=10,
-                       iffixedpoint=false)
+                       iffixedpoint=false,
+                       maxiter_restart=1)
     Random.seed!(seed)
     model = Heisenberg()
 
@@ -103,7 +104,7 @@ function run_benchmark(config::BenchmarkConfig;
         output_interval=1,
         save_interval=9999,
         ifsave_lbfgs=false,
-        maxiter_restart=1,
+        maxiter_restart=maxiter_restart,
     )
 
     A = init_ipeps(; atype, No=0, d=2, D, χ, params)
