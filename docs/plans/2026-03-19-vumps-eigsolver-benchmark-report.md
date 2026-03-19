@@ -290,9 +290,15 @@ At $\chi = 100$, pow3 and pow5 achieve the same energy ($-0.6692$), but **pow3 i
 
 | $D$ | $D^4$ | Optimal pow | Time ratio (pow\_opt / pow5) |
 |---|---|---|---|
-| 3 | 81 | 5 | 1.0$\times$ |
-| 4 | 256 | 3 | 0.5$\times$ |
-| 5 | 625 | 3 | 0.4$\times$ |
+| 3 | 81 | 5 | 1.0$\times$ | $\chi = 64$ |
+| 4 | 256 | 3 | 0.5$\times$ | $\chi = 100$ |
+| 5 | 625 | 3 | 0.4$\times$ | $\chi = 100$ |
+| 6 | 1296 | 1–2 | 0.6$\times$ | $\chi = 64$, $\chi/D^2 = 1.8$ |
+| 7 | 2401 | 2 | 0.6$\times$ | $\chi = 36$, $\chi/D^2 = 0.7$ |
+
+**$D = 6$ ($\chi = 64$):** pow1 achieves $E = -0.6691$ in 43s; pow2 reaches $-0.6692$ in 50s; pow3 gives $-0.6692$ in 67s. At this scale, even pow1 is competitive.
+
+**$D = 7$ ($\chi = 36$):** pow2 is clearly optimal ($E = -0.6665$, 24s); pow1 underperforms ($-0.6608$); pow3 slightly worse than pow2 ($-0.6661$, 38s). Note: $\chi/D^2 = 0.7$ is far too small for production; these results primarily validate the scaling trend.
 
 **Practical recommendation:** Use `maxiter_power = max(2, 7 - D)` as a heuristic (pow5 for $D \leq 3$, pow3 for $D = 4{-}5$, pow2 for $D \geq 6$). Also ensure $\chi / D^2 \geq 4$ for meaningful benchmarks.
 
