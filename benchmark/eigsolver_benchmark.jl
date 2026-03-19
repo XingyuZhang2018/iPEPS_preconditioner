@@ -50,7 +50,7 @@ function make_alg(config::BenchmarkConfig; maxiter, maxiter_ad, miniter_ad, tol,
                      maxiter_power=1,
                      maxiter_power_ad=config.param,
                      adaptive_power=true,
-                     maxiter=100, maxiter_ad=maxiter_ad,
+                     maxiter=maxiter, maxiter_ad=maxiter_ad,
                      miniter_ad=miniter_ad, tol=tol,
                      verbosity=verbosity, ifload_env=false,
                      ifsave_env=false)
@@ -80,7 +80,8 @@ function run_benchmark(config::BenchmarkConfig;
                        n_optim_steps=30,
                        atype=Array,
                        preconditiontype=:none,
-                       iter_precond=10)
+                       iter_precond=10,
+                       iffixedpoint=false)
     Random.seed!(seed)
     model = Heisenberg()
 
@@ -91,7 +92,7 @@ function run_benchmark(config::BenchmarkConfig;
     folder = mktempdir()
     params = GradientOptimize(
         boundary_alg=boundary_alg,
-        iffixedpoint=false,
+        iffixedpoint=iffixedpoint,
         optimizer=LBFGS(10; maxiter=n_optim_steps, verbosity=3, gradtol=1e-15),
         reuse_env=true,
         verbosity=3,

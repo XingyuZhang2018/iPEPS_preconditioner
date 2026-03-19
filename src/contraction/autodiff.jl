@@ -251,14 +251,21 @@ function ChainRulesCore.rrule(::typeof(environment_fix_point),
         # Neumann series (functional!)
         # ∂envsum = Σ_k (J_env^*)^k ∂env
         # -----------------------------
-        ∂env_k   = ∂env_out
+        # Unthunk to materialize any lazy Thunks (required for GPU norm)
+        _unthunk_tangent(t::Tangent) = Tangent{Any}(; (k => unthunk(v) for (k, v) in pairs(t))...)
+        _unthunk_tangent(t) = t
+        _tangent_norm(t::Tangent) = sqrt(sum(norm(v)^2 for v in values(t)))
+        _tangent_norm(t) = norm(t)
+
+        ∂env_k   = _unthunk_tangent(∂env_out)
         ∂envsum  = ZeroTangent()
-        ϵ = norm(∂env_k)
+        ϵ = _tangent_norm(∂env_k)
         ∂envsum += ∂env_k
 
         for ix in 1:10000
             ∂env_k   = vjp_env_env(∂env_k)
-            ϵ′ = norm(∂env_k)
+            ∂env_k   = _unthunk_tangent(∂env_k)
+            ϵ′ = _tangent_norm(∂env_k)
             if ϵ′ < 1e-12 || ϵ′ > ϵ
                 break
             end
@@ -344,14 +351,21 @@ function ChainRulesCore.rrule(::typeof(environment_fix_point),
         # Neumann series (functional!)
         # ∂envsum = Σ_k (J_env^*)^k ∂env
         # -----------------------------
-        ∂env_k   = ∂env_out
+        # Unthunk to materialize any lazy Thunks (required for GPU norm)
+        _unthunk_tangent(t::Tangent) = Tangent{Any}(; (k => unthunk(v) for (k, v) in pairs(t))...)
+        _unthunk_tangent(t) = t
+        _tangent_norm(t::Tangent) = sqrt(sum(norm(v)^2 for v in values(t)))
+        _tangent_norm(t) = norm(t)
+
+        ∂env_k   = _unthunk_tangent(∂env_out)
         ∂envsum  = ZeroTangent()
-        ϵ = norm(∂env_k)
+        ϵ = _tangent_norm(∂env_k)
         ∂envsum += ∂env_k
 
         for ix in 1:100
             ∂env_k = vjp_env_env(∂env_k)
-            ϵ′ = norm(∂env_k)
+            ∂env_k = _unthunk_tangent(∂env_k)
+            ϵ′ = _tangent_norm(∂env_k)
             if ϵ′ < 1e-12 || ϵ′ > ϵ
                 break
             end
