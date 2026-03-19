@@ -88,16 +88,28 @@ end
 function environment(M, env::VUMPSEnv, alg::VUMPS)
     t0 = @ignore_derivatives time()
     local err
-    @ignore_derivatives for i = 1:alg.maxiter
-        env, err = leftmove(M, env, alg)
-        alg.verbosity >= 3 && i % alg.output_interval == 0 && @info @sprintf("i = %5d,\tt = %.2fs\terr = %.3e\n", i, time()-t0, err)
-        if err < alg.tol && i >= alg.miniter
-            alg.verbosity >= 2 && @info @sprintf("contraction converged@i = %5d,\tt = %.2fs\terr = %.3e\n", i, time()-t0, err)
-            break
+    @ignore_derivatives begin
+        maxiter_power_max = alg.maxiter_power
+        err_init = nothing
+        for i = 1:alg.maxiter
+            env, err = leftmove(M, env, alg)
+            if alg.adaptive_power
+                if err_init === nothing
+                    err_init = err
+                end
+                n_decades = err > 0 && err_init > err ? floor(Int, log10(err_init / err)) : 0
+                alg.maxiter_power = clamp(2^n_decades, 1, maxiter_power_max)
+            end
+            alg.verbosity >= 3 && i % alg.output_interval == 0 && @info @sprintf("i = %5d,\tt = %.2fs\terr = %.3e\tpow = %d\n", i, time()-t0, err, alg.maxiter_power)
+            if err < alg.tol && i >= alg.miniter
+                alg.verbosity >= 2 && @info @sprintf("contraction converged@i = %5d,\tt = %.2fs\terr = %.3e\n", i, time()-t0, err)
+                break
+            end
+            if i == alg.maxiter
+                alg.verbosity >= 2 && @warn @sprintf("contraction canceled@i = %5d,\tt = %.2fs\terr = %.3e\n", i, time()-t0, err)
+            end
         end
-        if i == alg.maxiter
-            alg.verbosity >= 2 && @warn @sprintf("contraction canceled@i = %5d,\tt = %.2fs\terr = %.3e\n", i, time()-t0, err)
-        end
+        alg.maxiter_power = maxiter_power_max
     end
 
     maxiter_power_origin = alg.maxiter_power
