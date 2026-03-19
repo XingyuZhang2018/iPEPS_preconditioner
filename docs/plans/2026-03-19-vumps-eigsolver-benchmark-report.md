@@ -269,7 +269,24 @@ To verify that conclusions from $D = 3$ generalize to larger bond dimensions, we
 
 3. **Energy landscape at $D = 4$ appears smoother:** All configurations reach $E \approx -0.6689$ within 30 steps, with smaller variance across methods compared to $D = 3$. This suggests the optimization landscape becomes less rough at larger $D$ (more variational freedom).
 
-**Practical recommendation:** At $D = 4$, use `maxiter_power=3` instead of 5. More generally, the optimal power step count should decrease as $D$ increases, following approximately $N_{\text{pow}} \propto 1/\log(D^4)$ (since the spectral gap of the transfer matrix typically decreases with $D$).
+**$D = 5$, $\chi = 64$ results** (GPU memory: 15 GB):
+
+| Config | seed=42 E | seed=42 Time | seed=123 E | seed=123 Time |
+|---|---|---|---|---|
+| pow2\_trunc | $-0.6692$ | **28.2s** | $-0.6690$ | **23.6s** |
+| **pow3\_trunc** | $\mathbf{-0.6692}$ | 34.9s | $\mathbf{-0.6691}$ | 37.5s |
+| pow5\_trunc | $-0.6692$ | 72.1s | $-0.6685$ | 70.4s |
+| pow3\_fixed | $-0.6692$ | 47.0s | $-0.6689$ | 51.7s |
+
+At $D = 5$, pow5 is **counterproductive** (seed=123: $-0.6685$ vs pow3's $-0.6691$). The scaling trend is:
+
+| $D$ | $D^4$ | Optimal pow | Time ratio (pow\_opt / pow5) |
+|---|---|---|---|
+| 3 | 81 | 5 | 1.0$\times$ |
+| 4 | 256 | 3 | 0.5$\times$ |
+| 5 | 625 | 2–3 | 0.4$\times$ |
+
+**Practical recommendation:** Use `maxiter_power = max(2, 7 - D)` as a heuristic. Each power iteration costs $O(D^4 \chi^3)$, so fewer steps at larger $D$ yields significant speedup with negligible quality loss.
 
 ## 8. Future Directions
 
