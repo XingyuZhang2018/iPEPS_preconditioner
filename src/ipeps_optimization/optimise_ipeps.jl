@@ -127,8 +127,30 @@ function _finalize!(x, f, g, iter, env, env′, D, χ, params, t0, fδEierr)
         save(joinpath(folder1, "ipeps", "χ$(χ)", "No.$(iter).jld2"), "bcipeps", Array(x))
     end
     
+    # Adaptive power step: adjust maxiter_power and tol based on energy change
+    if params.boundary_alg isa VUMPS && params.boundary_alg.adaptive_power
+        alg = params.boundary_alg
+        dE = fδEierr[2]
+        if iter == 1
+            # Store dE_init in fδEierr[5] (extend array if needed)
+            if length(fδEierr) < 5
+                push!(fδEierr, dE)
+            else
+                fδEierr[5] = dE
+            end
+        end
+        if length(fδEierr) >= 5 && fδEierr[5] > 0 && dE > 0 && dE < fδEierr[5]
+            dE_init = fδEierr[5]
+            n_decades = floor(Int, log10(dE_init / dE))
+            maxiter_power_max = alg.maxiter_power_ad  # use ad value as ceiling
+            alg.maxiter_power = clamp(2^n_decades, 1, maxiter_power_max)
+            alg.tol = clamp(dE * 0.1, 1e-12, 1e-6)
+            params.verbosity >= 3 && @info @sprintf("adaptive: dE=%.2e, n_decades=%d, pow=%d, tol=%.2e\n", dE, n_decades, alg.maxiter_power, alg.tol)
+        end
+    end
+
     if fδEierr[2] < 1e-12 || fδEierr[4] > 1e-7
         g .= 0
     end
     return x, f, g
-end 
+end
