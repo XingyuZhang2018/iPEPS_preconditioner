@@ -47,10 +47,10 @@ function make_alg(config::BenchmarkConfig; maxiter, maxiter_ad, miniter_ad, tol,
                      ifsave_env=false)
     elseif config.eigsolver == :adaptive
         return VUMPS(eigsolver=:power,
-                     maxiter_power=config.param,
+                     maxiter_power=1,
                      maxiter_power_ad=config.param,
                      adaptive_power=true,
-                     maxiter=maxiter, maxiter_ad=maxiter_ad,
+                     maxiter=100, maxiter_ad=maxiter_ad,
                      miniter_ad=miniter_ad, tol=tol,
                      verbosity=verbosity, ifload_env=false,
                      ifsave_env=false)
