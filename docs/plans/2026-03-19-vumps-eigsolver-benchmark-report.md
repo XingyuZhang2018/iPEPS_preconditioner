@@ -278,15 +278,23 @@ To verify that conclusions from $D = 3$ generalize to larger bond dimensions, we
 | pow5\_trunc | $-0.6692$ | 72.1s | $-0.6685$ | 70.4s |
 | pow3\_fixed | $-0.6692$ | 47.0s | $-0.6689$ | 51.7s |
 
-At $D = 5$, pow5 is **counterproductive** (seed=123: $-0.6685$ vs pow3's $-0.6691$). The scaling trend is:
+At $D = 5$, $\chi = 64$ (insufficient $\chi/D^2 = 2.6$), pow5 appeared counterproductive. We re-ran with $\chi = 100$ ($\chi/D^2 = 4$, GPU: 16 GB):
+
+| Config | seed=42 E | seed=42 Time | seed=123 E | seed=123 Time |
+|---|---|---|---|---|
+| pow2\_trunc | $-0.6690$ | **99.7s** | $-0.6685$ | **104.8s** |
+| **pow3\_trunc** | $\mathbf{-0.6692}$ | 146.8s | $\mathbf{-0.6692}$ | 160.3s |
+| pow5\_trunc | $-0.6692$ | 393.1s | $-0.6692$ | 371.1s |
+
+At $\chi = 100$, pow3 and pow5 achieve the same energy ($-0.6692$), but **pow3 is 2.5$\times$ faster**. pow5 triggers frequent GPU memory pressure ("Low GPU memory" warnings), causing unpredictable per-step times (0.5s to 6s). The scaling trend:
 
 | $D$ | $D^4$ | Optimal pow | Time ratio (pow\_opt / pow5) |
 |---|---|---|---|
 | 3 | 81 | 5 | 1.0$\times$ |
 | 4 | 256 | 3 | 0.5$\times$ |
-| 5 | 625 | 2–3 | 0.4$\times$ |
+| 5 | 625 | 3 | 0.4$\times$ |
 
-**Practical recommendation:** Use `maxiter_power = max(2, 7 - D)` as a heuristic. Each power iteration costs $O(D^4 \chi^3)$, so fewer steps at larger $D$ yields significant speedup with negligible quality loss.
+**Practical recommendation:** Use `maxiter_power = max(2, 7 - D)` as a heuristic (pow5 for $D \leq 3$, pow3 for $D = 4{-}5$, pow2 for $D \geq 6$). Also ensure $\chi / D^2 \geq 4$ for meaningful benchmarks.
 
 ## 8. Future Directions
 
