@@ -45,6 +45,15 @@ function make_alg(config::BenchmarkConfig; maxiter, maxiter_ad, miniter_ad, tol,
                      miniter_ad=miniter_ad, tol=tol,
                      verbosity=verbosity, ifload_env=false,
                      ifsave_env=false)
+    elseif config.eigsolver == :adaptive
+        return VUMPS(eigsolver=:power,
+                     maxiter_power=config.param,
+                     maxiter_power_ad=config.param,
+                     adaptive_power=true,
+                     maxiter=maxiter, maxiter_ad=maxiter_ad,
+                     miniter_ad=miniter_ad, tol=tol,
+                     verbosity=verbosity, ifload_env=false,
+                     ifsave_env=false)
     elseif config.eigsolver == :arnoldi
         return VUMPS(eigsolver=:arnoldi,
                      krylov_dim=config.param,
