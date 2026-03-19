@@ -28,8 +28,9 @@ end
     output_interval::Int = 1
     verbosity::Int = Defaults.verbosity
     ifsimple_eig::Bool = Defaults.ifsimple_eig
-    maxiter_power::Int = 1 # power steps for eigsolve
+    maxiter_power::Int = 1 # power steps for eigsolve (also k_max when adaptive)
     maxiter_power_ad::Int = 5 # power steps for eigsolve in ad
+    adaptive_power::Bool = false # dynamically increase power steps as VUMPS converges
     eigsolver::Symbol = Defaults.eigsolver
     krylov_dim::Int = Defaults.krylov_dim
     krylov_dim_ad::Int = Defaults.krylov_dim
