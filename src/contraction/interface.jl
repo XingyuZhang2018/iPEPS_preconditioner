@@ -37,7 +37,7 @@ end
     ifsave_env::Bool = true
     ifparallel::Bool = false
     ifcheckpoint::Bool = false
-    forloop_iter::Int = 1 
+    forloop_iter::Int = 1
 end
 
 function environment(M, alg::Algorithm)

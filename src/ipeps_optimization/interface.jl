@@ -16,4 +16,5 @@ abstract type iPEPSOptimize end
     
     preconditiontype = :local
     iter_precond::Int = 10
+    maxiter_restart::Int = 100
 end

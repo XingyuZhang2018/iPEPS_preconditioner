@@ -13,16 +13,6 @@ end
 
 function simple_eig(f, v; maxiter, ifvalue=false)
     λ = 0.0
-    # Zygote.@ignore begin
-    #     for _ in 1:20
-    #         v = f(v)
-    #         λ′ = norm(v)
-    #         v /= λ′
-    #         abs(λ′ - λ) < 1e-8 && break
-    #         λ = λ′
-    #     end
-    # end
-    # v = Zygote.@ignore v
     for _ in 1:maxiter
         v = f(v)
         v /= Zygote.@ignore norm(v)

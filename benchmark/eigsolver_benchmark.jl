@@ -69,7 +69,9 @@ function run_benchmark(config::BenchmarkConfig;
                        maxiter_boundary=10, maxiter_ad=4, miniter_ad=4,
                        tol_boundary=1e-10,
                        n_optim_steps=30,
-                       atype=Array)
+                       atype=Array,
+                       preconditiontype=:none,
+                       iter_precond=10)
     Random.seed!(seed)
     model = Heisenberg()
 
@@ -77,21 +79,21 @@ function run_benchmark(config::BenchmarkConfig;
                             maxiter=maxiter_boundary, maxiter_ad=maxiter_ad,
                             miniter_ad=miniter_ad, tol=tol_boundary,
                             verbosity=3)
-
     folder = mktempdir()
     params = GradientOptimize(
         boundary_alg=boundary_alg,
         iffixedpoint=false,
-        optimizer=LBFGS(10; maxiter=n_optim_steps, verbosity=3, gradtol=1e-12),
+        optimizer=LBFGS(10; maxiter=n_optim_steps, verbosity=3, gradtol=1e-15),
         reuse_env=true,
         verbosity=3,
         folder=folder,
-        preconditiontype=:none,
+        preconditiontype=preconditiontype,
         ifload_lbfgs=false,
-        iter_precond=0,
+        iter_precond=iter_precond,
         output_interval=1,
         save_interval=9999,
         ifsave_lbfgs=false,
+        maxiter_restart=1,
     )
 
     A = init_ipeps(; atype, No=0, d=2, D, χ, params)

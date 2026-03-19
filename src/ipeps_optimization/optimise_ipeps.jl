@@ -74,7 +74,7 @@ function optimise_ipeps(A, χ, χshift::Int, model, params::iPEPSOptimize;
 
     state_path = joinpath(params.folder, "D$(D)", "lbfgs_checkpoint")
 
-    for _ in 1:100
+    for _ in 1:params.maxiter_restart
         resume_from = params.ifload_lbfgs ? joinpath(state_path, "χ$χ.jld2") : nothing
         save_state_to = params.ifsave_lbfgs ? joinpath(state_path, "χ$χ.jld2") : nothing
         A, e, eg, numfg, history = optimize_reload(fg, A, optimizer; 
