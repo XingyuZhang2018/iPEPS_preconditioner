@@ -36,15 +36,16 @@ function parse_history_log(logfile::String)
     return records
 end
 
-function make_alg(config::BenchmarkConfig; maxiter, maxiter_ad, miniter_ad, tol, verbosity)
+function make_alg(config::BenchmarkConfig; maxiter, maxiter_ad, miniter_ad, tol, verbosity, forloop_iter=1, maxiter_power_ad=nothing)
+    _pow_ad = maxiter_power_ad === nothing ? config.param : maxiter_power_ad
     if config.eigsolver == :power
         return VUMPS(eigsolver=:power,
                      maxiter_power=config.param,
-                     maxiter_power_ad=config.param,
+                     maxiter_power_ad=_pow_ad,
                      maxiter=maxiter, maxiter_ad=maxiter_ad,
                      miniter_ad=miniter_ad, tol=tol,
                      verbosity=verbosity, ifload_env=false,
-                     ifsave_env=false)
+                     ifsave_env=false, forloop_iter=forloop_iter)
     elseif config.eigsolver == :adaptive
         return VUMPS(eigsolver=:power,
                      maxiter_power=1,
@@ -53,7 +54,7 @@ function make_alg(config::BenchmarkConfig; maxiter, maxiter_ad, miniter_ad, tol,
                      maxiter=maxiter, maxiter_ad=maxiter_ad,
                      miniter_ad=miniter_ad, tol=tol,
                      verbosity=verbosity, ifload_env=false,
-                     ifsave_env=false)
+                     ifsave_env=false, forloop_iter=forloop_iter)
     elseif config.eigsolver == :arnoldi
         return VUMPS(eigsolver=:arnoldi,
                      krylov_dim=config.param,
@@ -82,14 +83,17 @@ function run_benchmark(config::BenchmarkConfig;
                        preconditiontype=:none,
                        iter_precond=10,
                        iffixedpoint=false,
-                       maxiter_restart=1)
+                       maxiter_restart=1,
+                       forloop_iter=1,
+                       maxiter_power_ad=nothing)
     Random.seed!(seed)
     model = Heisenberg()
 
     boundary_alg = make_alg(config;
                             maxiter=maxiter_boundary, maxiter_ad=maxiter_ad,
                             miniter_ad=miniter_ad, tol=tol_boundary,
-                            verbosity=3)
+                            verbosity=3, forloop_iter=forloop_iter,
+                            maxiter_power_ad=maxiter_power_ad)
     folder = mktempdir()
     params = GradientOptimize(
         boundary_alg=boundary_alg,
